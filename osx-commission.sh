@@ -23,7 +23,7 @@ fi
 
 backup() {
     if [[ -e $1 ]]; then
-        mv $1{,~}
+        cp -f $1{,~}
     fi
 }
 
