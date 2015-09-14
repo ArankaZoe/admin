@@ -16,8 +16,8 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: osx-commission.sh HOSTNAME"
+if [[ $# -ne 2 ]]; then
+    echo "Usage: osx-commission.sh HOSTNAME IFACE"
     exit 1
 fi
 
@@ -212,7 +212,7 @@ report_done
 report "Sending DNS forward record"
 kinit -k -t /etc/krb5.keytab -p host/$HOST
 nsupdate -g <<EOF
-update add $HOST 86400 A $(ipconfig getifaddr en0)
+update add $HOST 86400 A $(ipconfig getifaddr $IFACE)
 send
 EOF
 report_done
