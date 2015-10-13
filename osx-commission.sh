@@ -200,7 +200,7 @@ EOF
 report_done
 
 report "Activating network logins"
-defaults write /Library/Preferences/com.apple.loginwindow SHOWFULLNAME -bool false
+defaults write /Library/Preferences/com.apple.loginwindow SHOWFULLNAME -bool true
 dseditgroup -o delete -T group com.apple.access_loginwindow &>/dev/null ||:
 report_done
     
