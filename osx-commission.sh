@@ -90,12 +90,6 @@ account    required       pam_opendirectory.so
 EOF
 report_done
 
-# mkdir -p $SCRIPTS
-# cat > $SCRIPTS/Kerberized-Chrome.applescript <<'EOF'
-# do shell script "open -n -a 'Google Chrome.app' --args --auth-server-whitelist='*in.lshift.de' \
-#   --user-data-dir=/Users/${USER}/Library/Application\\ Support/Google/kerberized"
-# EOF
-
 report "Setting up IPA LDAP configuration"
 dsconfigldap -r $KDC ||:
 dsconfigldap -s -e -n "IPA LDAP" -a $KDC
