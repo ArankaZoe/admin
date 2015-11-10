@@ -5,11 +5,13 @@ set -e
 KDC=kant.in.lshift.de
 CONF_KRB5=/Library/Preferences/edu.mit.Kerberos
 CONF_SSH=/etc/ssh_config
+CONF_SSHD=/etc/sshd_config
 PAM_AUTH=/etc/pam.d/authorization
 SCRIPTS=/Library/Scripts/LShift.de
 FIREFOX=/Applications/Firefox.app/Contents/Resources
 OD=/Library/Preferences/OpenDirectory/Configurations/LDAPv3/kant.in.lshift.de.plist
 HOST=$1
+IFACE=$2
 
 if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root"
@@ -95,6 +97,7 @@ report_done
 # EOF
 
 report "Setting up IPA LDAP configuration"
+dsconfigldap -r $KDC ||:
 dsconfigldap -s -e -n "IPA LDAP" -a $KDC
 dscl localhost -merge /Search CSPSearchPath /LDAPv3/$KDC
 dscl localhost -merge /Contact CSPSearchPath /LDAPv3/$KDC
@@ -218,10 +221,26 @@ EOF
 report_done
 
 report "Enabling SSH GSSAPI support"
+
 backup $CONF_SSH
-cat >> $CONF_SSH <<'EOF'
+
+if ! grep -q 'Host *.in.lshift.de' $CONF_SSH; then
+    cat >> $CONF_SSH <<'EOF'
 Host *.in.lshift.de
   GSSAPIAuthentication yes
   GSSAPIDelegateCredentials yes
 EOF
+fi
+
+if ! grep -qE '^GSSAPIAuthentication yes' $CONF_SSHD; then
+    backup $CONF_SSHD
+    cat >> $CONF_SSHD <<'EOF'
+GSSAPIAuthentication yes
+EOF
+fi
+report_done
+
+report "Writing Chrome config"
+defaults write /Library/Preferences/com.google.Chrome.plist AuthServerWhitelist '.in.lshift.de'
+defaults write /Library/Preferences/com.google.Chrome.plist AuthNegotiateDelegateWhitelist '.in.lshift.de'
 report_done
