@@ -238,3 +238,7 @@ report "Writing Chrome config"
 defaults write /Library/Preferences/com.google.Chrome.plist AuthServerWhitelist '.in.lshift.de'
 defaults write /Library/Preferences/com.google.Chrome.plist AuthNegotiateDelegateWhitelist '.in.lshift.de'
 report_done
+
+report "Importing CA into system keychain"
+security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /etc/ipa/ca.crt
+report_done
