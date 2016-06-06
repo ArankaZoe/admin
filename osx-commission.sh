@@ -1,15 +1,15 @@
-#!/bin/bash
+ #!/bin/bash
 
 set -e
 
-KDC=kant.in.lshift.de
+KDC=ipa.in.lshift.de
 CONF_KRB5=/Library/Preferences/edu.mit.Kerberos
 CONF_SSH=/etc/ssh_config
 CONF_SSHD=/etc/sshd_config
 PAM_AUTH=/etc/pam.d/authorization
 SCRIPTS=/Library/Scripts/LShift.de
 FIREFOX=/Applications/Firefox.app/Contents/Resources
-OD=/Library/Preferences/OpenDirectory/Configurations/LDAPv3/kant.in.lshift.de.plist
+OD=/Library/Preferences/OpenDirectory/Configurations/LDAPv3/${KDC}.plist
 HOST=$1
 IFACE=$2
 
@@ -96,7 +96,7 @@ dsconfigldap -s -e -n "IPA LDAP" -a $KDC
 dscl localhost -merge /Search CSPSearchPath /LDAPv3/$KDC
 dscl localhost -merge /Contact CSPSearchPath /LDAPv3/$KDC
 
-# odutil show configuration /LDAPv3/kant.in.lshift.de
+# odutil show configuration /LDAPv3/${KDC}
 # plutil -convert json -r -o - $OD
 
 plutil -convert binary1 -o $OD - <<'EOF'
@@ -174,14 +174,14 @@ plutil -convert binary1 -o $OD - <<'EOF'
       "LDAP Referrals" : false
     }
   },
-  "node name" : "\/LDAPv3\/kant.in.lshift.de",
+  "node name" : "\/LDAPv3\/ipa.in.lshift.de",
   "description" : "IPA LDAP",
   "options" : {
     "man-in-the-middle" : false,
     "connection setup timeout" : 10,
     "destination" : {
       "other" : "ldap",
-      "host" : "kant.in.lshift.de",
+      "host" : "ipa.in.lshift.de",
       "port" : 389
     },
     "packet encryption" : 1,
@@ -242,3 +242,5 @@ report_done
 report "Importing CA into system keychain"
 security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /etc/ipa/ca.crt
 report_done
+
+# sudo dseditgroup -o edit -a geoff -t user wheel
