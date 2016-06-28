@@ -23,6 +23,11 @@ if [[ $# -ne 2 ]]; then
     exit 1
 fi
 
+if [[ ! -e /etc/krb5.keytab ]]; then
+    echo "Need valid keytab file at /etc/krb5.keytab"
+    exit 1
+fi
+
 backup() {
     if [[ -e $1 ]]; then
         cp -f $1{,~}
